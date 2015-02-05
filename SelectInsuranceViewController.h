@@ -14,5 +14,5 @@
 @property (nonatomic,retain) NSString * CarNumber;//车牌号
 @property (nonatomic,retain) NSString * CarFrame;//车架号
 @property (nonatomic,retain) NSString * CarEngine;//发动机号
-//@property (nonatomic.retain) NSString * 
+//@property (nonatomic.retain) NSString * 、、、、、、、、、
 @end
