@@ -32,12 +32,12 @@
 @end
 
 @implementation MeterViewController{
-
+    
     NSMutableArray *lDataArr;
     NSMutableArray *temDataArr;//水温
     NSMutableArray *rotateSpeedArr;
-     NSMutableArray *speedArr;
-
+    NSMutableArray *speedArr;
+    
 }
 
 - (IBAction)onclickNaviBtn:(id)sender {
@@ -76,10 +76,10 @@
     
     [self initSpeed];
     
- 
+    
 }
 -(void)viewWillAppear:(BOOL)animated{
-  
+    
 }
 // 油量
 -(void)initOilMassData{
@@ -87,9 +87,9 @@
     if (lDataArr == nil) {
         lDataArr = [[NSMutableArray alloc]init];
     }
-   
+    
     if ([BluetoothSingleton sharedInstance].carInfo != nil) {
-       
+        
         _meterInfo = [BluetoothSingleton sharedInstance].carInfo;
     }
     if (_meterInfo.oilMass != nil ) {
@@ -100,33 +100,33 @@
         _lab_Fuel.text = [NSString stringWithFormat:@"%@%@",_meterInfo.oilMass,@"%"];
         _lab_KM.text = _meterInfo.oilMass;
         [lDataArr addObject:[NSString stringWithFormat:@"%f",end1]];
-//        [self rotatingOilMassMeter:oil];
+        //        [self rotatingOilMassMeter:oil];
         [self roaratingOil:end1];
         
         NSLog(@"%f",end1);
     }
     
-
+    
 }
 
 //-(float)percentage:(float)sender{
-//    
-//   
+//
+//
 //    if (sender > 0.16) {
 //        float end = 2.5 * sender/100;
 //        float end1 = -1.2+(float)end;
-//        
+//
 //        return end1;
 //
 //    }else{
 //        float end = 0.4 * sender/100;
 //        float end1 = -3.3+(float)end;
-//    
+//
 //        return end1;
 //    }
-//    
-//  
-//   
+//
+//
+//
 //}
 
 //水温
@@ -144,14 +144,14 @@
     if (_meterInfo.WaterTemperature != nil) {
         
         [_meterInfo addObserver:self forKeyPath:@"WaterTemperature" options:NSKeyValueObservingOptionNew context:nil];
-//        float oil = [_meterInfo.WaterTemperature floatValue];
-//        float end1 = [self percentage:oil];
+        //        float oil = [_meterInfo.WaterTemperature floatValue];
+        //        float end1 = [self percentage:oil];
         _lab_Temperature.text = [NSString stringWithFormat:@"%@%@",_meterInfo.WaterTemperature,@"°c"];
-//        [temDataArr addObject:[NSString stringWithFormat:@"%f",end1]];
-
+        //        [temDataArr addObject:[NSString stringWithFormat:@"%f",end1]];
+        
     }
-
-
+    
+    
 }
 //转速
 -(void)initRotateSpeedArr{
@@ -169,16 +169,16 @@
         float rpm = [_meterInfo.RPM floatValue];
         float end1 = [self calculateRPM:rpm];
         _lab_Speedometer.text = [NSString stringWithFormat:@"%@%@",_meterInfo.RPM,@"转/min"];
-                [rotateSpeedArr addObject:[NSString stringWithFormat:@"%f",end1]];
+        [rotateSpeedArr addObject:[NSString stringWithFormat:@"%f",end1]];
         [self roatatingRPM:end1];
-
+        
     }
-
+    
 }
 
 //速度
 -(void)initSpeed{
-
+    
     if (speedArr == nil) {
         speedArr = [[NSMutableArray alloc]init];
     }
@@ -197,15 +197,15 @@
         [self rotatingSpeedMeter:end1];
         
     }
-
-
+    
+    
 }
 //转速
 -(float)calculateRPM:(float)rpm{
-
-
+    
+    
     return rpm/8000.0 * 2.200 -2.199;
-
+    
 }
 //速度
 -(float)calculateSpeed:(float)speed{
@@ -229,15 +229,15 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"oilMass" ]) {
-
+        
         if ([change objectForKey:@"new"] != nil) {
             float oil = [[change objectForKey:@"new"] floatValue];
             _lab_Fuel.text = [NSString stringWithFormat:@"%@%@",[change objectForKey:@"new"],@"%"];
             float end1 = [self calculateOilm:oil/100];
             [lDataArr addObject:[NSString stringWithFormat:@"%f",end1]];
-//            [self rotatingOilMassMeter:[[lDataArr objectAtIndex:0] floatValue]];
+            //            [self rotatingOilMassMeter:[[lDataArr objectAtIndex:0] floatValue]];
             [self rotatingOilMassMeter:end1];
-
+            
         }
         
         
@@ -247,12 +247,12 @@
         if ([change objectForKey:@"new"] != nil) {
             float oil = [[change objectForKey:@"new"] floatValue];
             _lab_Temperature.text = [NSString stringWithFormat:@"%@%@",[change objectForKey:@"new"],@"°C"];
-//            float end1 = [self percentage:oil];
-//            [lDataArr addObject:[NSString stringWithFormat:@"%f",end1]];
-//            [self rotatingOilMassMeter:[[lDataArr objectAtIndex:0] floatValue]];
+            //            float end1 = [self percentage:oil];
+            //            [lDataArr addObject:[NSString stringWithFormat:@"%f",end1]];
+            //            [self rotatingOilMassMeter:[[lDataArr objectAtIndex:0] floatValue]];
             
         }
-
+        
     }
     
     if ([keyPath isEqualToString:@"RPM"]) {
@@ -278,8 +278,8 @@
         }
         
     }
-
-
+    
+    
 }
 
 -(void)roaratingOil:(float)oil{
@@ -289,10 +289,10 @@
             [lDataArr removeObjectAtIndex:0];
         }else{
             
-             [self rotatingRED:-3.1 andEnd:[[lDataArr objectAtIndex:0] floatValue]andIMG:_img_FuelBule andDur:0.5];
+            [self rotatingRED:-3.1 andEnd:[[lDataArr objectAtIndex:0] floatValue]andIMG:_img_FuelBule andDur:0.5];
             //            [speedArr removeObjectAtIndex:0];
         }
-
+        
     }else{
         if (lDataArr.count == 2) {
             [self rotatingBLUE:[[lDataArr objectAtIndex:0] floatValue] andEnd:[[rotateSpeedArr objectAtIndex:0] floatValue] andIMG:_img_FuelBule andDur:0.5];
@@ -302,15 +302,15 @@
             [self rotatingRED:-3.1 andEnd:[[speedArr objectAtIndex:0] floatValue] andIMG:_img_FuelBule andDur:0.5];
             
         }
-
-    
+        
+        
     }
-
-
+    
+    
 }
 //转速
 -(void)roatatingRPM:(float)rpm{
-
+    
     if (rpm < -1.1) {
         _img_rpm_red.hidden = YES;
         _img_rpm_blue.hidden = NO;
@@ -320,9 +320,9 @@
         }else{
             
             [self rotatingBLUE:-2.2 andEnd:[[rotateSpeedArr firstObject] floatValue] andIMG:_img_rpm_blue andDur:0.5];
-//            [speedArr removeObjectAtIndex:0];
+            //            [speedArr removeObjectAtIndex:0];
         }
-
+        
         
     }else{
         _img_speed_blue.hidden = NO;
@@ -335,23 +335,23 @@
             [self rotatingRED:-2.2 andEnd:[[speedArr objectAtIndex:0] floatValue] andIMG:_img_rpm_red andDur:0.5];
             
         }
-
+        
     }
-
-
+    
+    
 }
 //速度
 -(void)rotatingSpeedMeter:(float)speed {
-   
+    
     if (speed < -1.1) {
-         //-2.1 -0.09
+        //-2.1 -0.09
         _img_speed_blue.hidden= NO;
         _img_speed_red.hidden = YES;
         if (speedArr.count == 2) {
             [self rotatingBLUE:[[speedArr objectAtIndex:0] floatValue] andEnd:[[speedArr objectAtIndex:1] floatValue]andIMG:_img_speed_blue andDur:0.5];
             [speedArr removeObjectAtIndex:0];
         }else{
-        
+            
             [self rotatingBLUE:-2.2 andEnd:[[speedArr firstObject] floatValue] andIMG:_img_speed_blue andDur:0.5];
         }
         
@@ -363,21 +363,21 @@
             [self rotatingRED:[[speedArr objectAtIndex:0] floatValue] andEnd:[[speedArr objectAtIndex:0] floatValue] andIMG:_img_speed_red andDur:0.5];
             [speedArr removeObjectAtIndex:0];
         }else{
-        
-        [self rotatingRED:-2.2 andEnd:[[speedArr objectAtIndex:0] floatValue] andIMG:_img_speed_red andDur:0.5];
-        
+            
+            [self rotatingRED:-2.2 andEnd:[[speedArr objectAtIndex:0] floatValue] andIMG:_img_speed_red andDur:0.5];
+            
         }
-    
-       
-    
+        
+        
+        
     }
-
-
+    
+    
 }
 
 //油耗
 - (void)rotatingOilMassMeter:(float)oil{
-
+    
     
     
     
@@ -411,8 +411,8 @@
     
 }
 -(void)viewWillDisappear:(BOOL)animated{
-//    [_meterInfo removeObserver:self forKeyPath:@"oilMass"];
-
+    //    [_meterInfo removeObserver:self forKeyPath:@"oilMass"];
+    
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

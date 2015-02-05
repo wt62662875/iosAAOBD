@@ -13,7 +13,7 @@ static BluetoothSingleton *sharedCLDelegate = nil;
 +(BluetoothSingleton *)sharedInstance{
     @synchronized(self) {
         if(sharedCLDelegate == nil) {
-          sharedCLDelegate =  [[[BluetoothSingleton class] alloc] init]; //   assignment   not   done   here
+            sharedCLDelegate =  [[[BluetoothSingleton class] alloc] init]; //   assignment   not   done   here
         }
     }
     return sharedCLDelegate;
@@ -30,6 +30,11 @@ static BluetoothSingleton *sharedCLDelegate = nil;
         _Cmd2 = [[NSArray alloc]init];
         _Cmd3 = [[NSArray alloc]init];
         _Cmd4 = [[NSArray alloc]init];
+        _fullDataArrl = [[NSMutableArray alloc]init];
+        _RPMarr = [NSArray array];
+        _TPSarr = [NSArray array];
+        _Troublearr = [NSArray array];
+        _CATTEMParr = [NSArray  array];
         
     }
     return self;

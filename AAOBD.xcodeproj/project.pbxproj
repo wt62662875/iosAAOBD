@@ -58,7 +58,6 @@
 		0FC85D131A53980D007E29A8 /* 光@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0FC85D0F1A53980D007E29A8 /* 光@3x.png */; };
 		0FC85D141A53980D007E29A8 /* che@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0FC85D101A53980D007E29A8 /* che@2x.png */; };
 		0FC85D151A53980D007E29A8 /* che@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0FC85D111A53980D007E29A8 /* che@3x.png */; };
-		0FCA23CF1A7B76D700BC6CE1 /* BluetoothSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FCA23CE1A7B76D700BC6CE1 /* BluetoothSingleton.m */; };
 		0FCA23D41A7BBE0A00BC6CE1 /* 个人信息@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0FCA23D01A7BBE0A00BC6CE1 /* 个人信息@2x.jpg */; };
 		0FCA23D51A7BBE0A00BC6CE1 /* 个人信息@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0FCA23D11A7BBE0A00BC6CE1 /* 个人信息@3x.png */; };
 		0FCA23D61A7BBE0A00BC6CE1 /* 个人信息d@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0FCA23D21A7BBE0A00BC6CE1 /* 个人信息d@2x.jpg */; };
@@ -101,6 +100,7 @@
 		0FD1D6551A569B9200EE50C9 /* 错@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0FD1D6511A569B9200EE50C9 /* 错@3x.png */; };
 		0FD1D6561A569B9200EE50C9 /* 发动机@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0FD1D6521A569B9200EE50C9 /* 发动机@2x.png */; };
 		0FD1D6571A569B9200EE50C9 /* 发动机@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0FD1D6531A569B9200EE50C9 /* 发动机@3x.png */; };
+		0FD5B12A1A8391A1002BFF30 /* BluetoothSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FD5B1281A8391A1002BFF30 /* BluetoothSingleton.m */; };
 		0FD7EC311A6E59FF007D0CCB /* 导航.png in Resources */ = {isa = PBXBuildFile; fileRef = 0FD7EC2F1A6E59FF007D0CCB /* 导航.png */; };
 		0FD7EC321A6E59FF007D0CCB /* 导航off.png in Resources */ = {isa = PBXBuildFile; fileRef = 0FD7EC301A6E59FF007D0CCB /* 导航off.png */; };
 		0FD7EC351A6E5A13007D0CCB /* 历史轨迹.png in Resources */ = {isa = PBXBuildFile; fileRef = 0FD7EC331A6E5A13007D0CCB /* 历史轨迹.png */; };
@@ -490,8 +490,6 @@
 		0FC85D0F1A53980D007E29A8 /* 光@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "光@3x.png"; sourceTree = "<group>"; };
 		0FC85D101A53980D007E29A8 /* che@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "che@2x.png"; sourceTree = "<group>"; };
 		0FC85D111A53980D007E29A8 /* che@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "che@3x.png"; sourceTree = "<group>"; };
-		0FCA23CD1A7B76D700BC6CE1 /* BluetoothSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BluetoothSingleton.h; path = AAOBD/BluetoothSingleton.h; sourceTree = "<group>"; };
-		0FCA23CE1A7B76D700BC6CE1 /* BluetoothSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BluetoothSingleton.m; path = AAOBD/BluetoothSingleton.m; sourceTree = "<group>"; };
 		0FCA23D01A7BBE0A00BC6CE1 /* 个人信息@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "个人信息@2x.jpg"; sourceTree = "<group>"; };
 		0FCA23D11A7BBE0A00BC6CE1 /* 个人信息@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "个人信息@3x.png"; sourceTree = "<group>"; };
 		0FCA23D21A7BBE0A00BC6CE1 /* 个人信息d@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "个人信息d@2x.jpg"; sourceTree = "<group>"; };
@@ -546,6 +544,8 @@
 		0FD1D6511A569B9200EE50C9 /* 错@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "错@3x.png"; sourceTree = "<group>"; };
 		0FD1D6521A569B9200EE50C9 /* 发动机@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "发动机@2x.png"; sourceTree = "<group>"; };
 		0FD1D6531A569B9200EE50C9 /* 发动机@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "发动机@3x.png"; sourceTree = "<group>"; };
+		0FD5B1281A8391A1002BFF30 /* BluetoothSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BluetoothSingleton.m; sourceTree = "<group>"; };
+		0FD5B1291A8391A1002BFF30 /* BluetoothSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BluetoothSingleton.h; sourceTree = "<group>"; };
 		0FD7EC2F1A6E59FF007D0CCB /* 导航.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "导航.png"; sourceTree = "<group>"; };
 		0FD7EC301A6E59FF007D0CCB /* 导航off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "导航off.png"; sourceTree = "<group>"; };
 		0FD7EC331A6E5A13007D0CCB /* 历史轨迹.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "历史轨迹.png"; sourceTree = "<group>"; };
@@ -1738,8 +1738,8 @@
 		74ABAEB51A4D52A100A662DB /* 主页 */ = {
 			isa = PBXGroup;
 			children = (
-				0FCA23CD1A7B76D700BC6CE1 /* BluetoothSingleton.h */,
-				0FCA23CE1A7B76D700BC6CE1 /* BluetoothSingleton.m */,
+				0FD5B1291A8391A1002BFF30 /* BluetoothSingleton.h */,
+				0FD5B1281A8391A1002BFF30 /* BluetoothSingleton.m */,
 				0FDAE7A11A721F45008058B7 /* 爱车 */,
 				74ABAEB61A4D52EC00A662DB /* FristViewController.h */,
 				74ABAEB71A4D52EC00A662DB /* FristViewController.m */,
@@ -2449,6 +2449,7 @@
 				74A6E9811A824DEB00DB9C51 /* AllAlertView.m in Sources */,
 				74B796A31A08CD0400FE2F56 /* ASIFormDataRequest.m in Sources */,
 				7407878F1A722C7A0044B5B0 /* UserDeviceViewController.m in Sources */,
+				0FD5B12A1A8391A1002BFF30 /* BluetoothSingleton.m in Sources */,
 				7487E41819FF250800D62B8E /* main.m in Sources */,
 				742261701A75D7B000837839 /* CarMessageTableViewCell.m in Sources */,
 				74B7969F1A08CD0400FE2F56 /* ASIAuthenticationDialog.m in Sources */,
@@ -2482,7 +2483,6 @@
 				74B796B91A08CD0400FE2F56 /* NSString+Trim.m in Sources */,
 				0FCCBA661A70933E00152D3D /* UpkeepViewController.m in Sources */,
 				746079F11A4A491700A7F045 /* RegisterViewController.m in Sources */,
-				0FCA23CF1A7B76D700BC6CE1 /* BluetoothSingleton.m in Sources */,
 				7402E7901A53EC4E00A4E18B /* InsuranceComputingViewController.m in Sources */,
 				74B796C81A08CD0400FE2F56 /* SDWebImageDownloaderOperation.m in Sources */,
 				746883AA1A529637007A244B /* SetViewController.m in Sources */,
