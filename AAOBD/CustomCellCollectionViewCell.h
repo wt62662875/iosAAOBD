@@ -1,0 +1,16 @@
+//
+//  CustomCellCollectionViewCell.h
+//  AAOBD
+//
+//  Created by oi on 23/1/15.
+//  Copyright (c) 2015年 wangtao. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface CustomCellCollectionViewCell : UICollectionViewCell
+@property (weak, nonatomic) IBOutlet UIImageView *img_imgView;
+@property (weak, nonatomic) IBOutlet UILabel *lab_title;
+@property (weak, nonatomic) IBOutlet UILabel *lab_sub;
+
+@end
