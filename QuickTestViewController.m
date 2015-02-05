@@ -8,6 +8,8 @@
 
 #import "QuickTestViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "BluetoothSingleton.h"
+#import "VehicleDetectionViewController.h"
 #define TIMEDURATION 0.5
 @interface QuickTestViewController ()<UITableViewDataSource,UITableViewDelegate>
 //进度条
@@ -27,25 +29,42 @@
     double time;
     NSMutableArray *dataAarr;
     NSArray *receiveDataArr;//接收到的数据
-  
+    
+    BOOL isBool;
+    
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(isFullData:) name:@"isFullData" object:nil];
+    isBool = YES;
+    
+    [BluetoothSingleton sharedInstance].Car_medical = YES;
+    [BluetoothSingleton sharedInstance].Car_data = NO;
+    [BluetoothSingleton sharedInstance].Car_Data = NO;
+    [BluetoothSingleton sharedInstance].Car_check = NO;
+    [BluetoothSingleton sharedInstance].Car_Check = NO;
+    
     _myTabView.userInteractionEnabled = NO;
     [_navi_Btn setImage:[UIImage imageNamed:@"return-clicked.png"] forState:UIControlStateHighlighted];
     
-}
-
-
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
     [self initData];
     [self setTimer];
     [self setProgressView];
+    
+}
+- (void)viewWillUnload{
+    [self viewWillUnload];
+    //    [self removeObserver:self forKeyPath:@"isFullData"];
+    
 }
 
+-(void)viewWillDisappear:(BOOL)animated{
+    
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"isFullData" object:nil];
+    
+}
 - (void)initData{
     time = 0;
     NSString *dataStr=@"利用滚动视图的这个协议方法应该可以";
@@ -60,19 +79,43 @@
         [dataAarr addObject:dataStr];
         [dataAarr addObject:dataStr];
         [dataAarr addObject:dataStr];
+        
+        
     }
     
 }
+
+-(void)isFullData:(NSNotification *)notfiti{
+    NSLog(@"fullarry =========%@",notfiti.object);
+    NSArray *arr = notfiti.object;
+    
+    if (arr!=nil&&arr.count>3) {
+        
+        [_myProgressView setProgress:1];
+        [_timer invalidate];
+        if (self.navigationController!=nil) {
+            
+            UIStoryboard *loveCarStorB =[UIStoryboard storyboardWithName:@"LoveCarStoryboard" bundle:nil];
+            
+            VehicleDetectionViewController *vehcleVC =[loveCarStorB instantiateViewControllerWithIdentifier:@"Vehicle"];
+            [self.navigationController pushViewController:vehcleVC animated:YES];
+            
+        }
+        
+    }
+    
+}
+
 - (void)refreshData{
     
     if (dataAarr.count != 0) {
-            [dataAarr removeObjectAtIndex:0];
-        }
-        [dataAarr addObjectsFromArray:@[@"哈哈哈哈哈",]];
-        [_myTabView reloadData];
-
-
-
+        [dataAarr removeObjectAtIndex:0];
+    }
+    [dataAarr addObjectsFromArray:@[@"哈哈哈哈哈",]];
+    [_myTabView reloadData];
+    
+    
+    
 }
 - (void)setProgressView{
     [_myProgressView setProgress:0.f];
@@ -87,10 +130,15 @@
 }
 - (void)timerAction:(NSTimer *)sendr{
     time+=1.0;
-    if (time > dataAarr.count) {
-        [_timer invalidate];
-        _lightImgView.hidden = YES;
-        [self performSegueWithIdentifier:@"VehicleDetection" sender:nil];
+    if (time > dataAarr.count-1) {
+        //        [_timer invalidate];
+        //        _lightImgView.hidden = YES;
+        //        [self performSegueWithIdentifier:@"VehicleDetection" sender:nil];
+        [_myProgressView setProgress:(0.8)];
+        [self moveLight];//平移
+        [self rotate];//旋转
+        [self refreshData];
+        
     }else{
         [_myProgressView setProgress:(time/dataAarr.count)];//进度
         [self moveLight];//平移
@@ -103,10 +151,16 @@
     // Dispose of any resources that can be recreated.
 }
 - (IBAction)onclickLeftBarbutton:(UIButton *)sender {
-     [_timer invalidate];
+    [_timer invalidate];
     [dataAarr removeAllObjects];
     [self dismissViewControllerAnimated:YES completion:^{
-        
+        [BluetoothSingleton sharedInstance].Car_medical = NO;
+        [BluetoothSingleton sharedInstance].Car_Medical = NO;
+        [BluetoothSingleton sharedInstance].Car_data = YES;
+        [BluetoothSingleton sharedInstance].Car_Data = NO;
+        [BluetoothSingleton sharedInstance].Car_check = NO;
+        [BluetoothSingleton sharedInstance].Car_Check = NO;
+        [BluetoothSingleton sharedInstance].Car_Other = NO;
     }];
 }
 
@@ -133,7 +187,7 @@
 
 //旋转动画
 -(void)rotate{
-
+    
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform"];
     animation.delegate = self;
     
@@ -147,13 +201,13 @@
     animation.fillMode = kCAFillModeForwards;
     
     [_rotateImgView.layer addAnimation:animation forKey:@"animation"];
-
-
+    
+    
 }
 
 #pragma mark -UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-       return dataAarr.count;
+    return dataAarr.count;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -163,9 +217,6 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:tableCellIdentifier];
     }
-    
-    
-    
     
     cell.backgroundColor = [UIColor clearColor];
     cell.textLabel.text = [dataAarr objectAtIndex:indexPath.row];

@@ -17,9 +17,15 @@
 -(void)Voltage:(NSString*)vlt;//电压
 -(void)cacafe:(NSString*)caf;//平均油耗
 -(void)mildist:(NSString*)mid;//故障灯亮起后行驶距离
-
 @end
+
+typedef enum
+{
+    CarData = 0,
+    CarCheck = 1,
+    CarMedical = 2,
+    CarOther = 3
+}CarStatusType;
 @interface SaveMoneyViewController : UIViewController
 @property (nonatomic,retain) id<bluetoothDelegate> delegete;
-
 @end
