@@ -16,5 +16,6 @@
 @interface QuickTestViewController : UIViewController
 
 @property(nonatomic,retain)id<QuickTestViewControllerDelegate> delegate;
+@property (nonatomic ,retain)NSMutableArray *fullDataArr;
 
 @end

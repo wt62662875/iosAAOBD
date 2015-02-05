@@ -33,6 +33,7 @@
     float savemoney5 ;
     float savemoney6 ;
     float savemoney7 ;
+    CarStatusType *carStatusType;
 }
 
 @property (strong, nonatomic) IBOutlet UIScrollView *savemoneyScrView;
@@ -52,14 +53,17 @@
 
 @synthesize delegete;
 
+-(id)initWithCoder:(NSCoder *)aDecoder{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _savemoneyScrView.contentSize = CGSizeMake(0, 560);
-    [_savemoneyScrView setScrollEnabled:YES];
-    _savemoneyScrView.showsVerticalScrollIndicator = NO;
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    NSString *SaveMoney = [userDefaults stringForKey:@"SaveMoney"];
-    _saveMoneyLab.text =SaveMoney;
+    
     NSArray *Cmd1 = @[@"BT+DATA.VSS\r\n",@"BT+DATA.ECT\r\n",@"BT+DATA.RPM\r\n",@"BT+DATA.CAC_AFE\r\n"];//快速反应指令
     NSArray *Cmd2 = @[@"BT+DATA.VSS\r\n",@"BT+DATA.ECT\r\n",@"BT+DATA.RPM\r\n",@"BT+DATA.CAC_AFE\r\n",@"BT+DATA.FUELLVL\r\n",@"BT+SPWR\r\n",@"BT+DATA.AD_MIL\r\n",@"BT+DATA.MIL_DIST\r\n"];//到了一定时间请求全部数据
     NSArray *Cmd3 = @[@"BT+RPDTC\r\n",@"BT+DATA.RPM\r\n",@"BT+DATA.TPS\r\n",@"BT+DATA.CATTEMP11\r\n"];//体验指令
@@ -68,9 +72,11 @@
     [BluetoothSingleton sharedInstance].Cmd2 = Cmd2;
     [BluetoothSingleton sharedInstance].Cmd3 = Cmd3;
     [BluetoothSingleton sharedInstance].Cmd4 = Cmd4;
-    [BluetoothSingleton sharedInstance].status = false;
-    [BluetoothSingleton sharedInstance].Car_data = false;
+    [BluetoothSingleton sharedInstance].Car_Medical = false;
     [BluetoothSingleton sharedInstance].Car_medical = false;
+    [BluetoothSingleton sharedInstance].Car_Data =true;
+    [BluetoothSingleton sharedInstance].Car_data = false;
+    [BluetoothSingleton sharedInstance].Car_Check = false;
     [BluetoothSingleton sharedInstance].Car_check = false;
     [BluetoothSingleton sharedInstance].Car_Other = false;
     [BluetoothSingleton sharedInstance].config_E1 = 3;//主数据显示次数
@@ -81,6 +87,20 @@
     [BluetoothSingleton sharedInstance].C2=0;
     [BluetoothSingleton sharedInstance].C3=0;
     [BluetoothSingleton sharedInstance].C4=0;
+    [BluetoothSingleton sharedInstance].RPMstatus = true;
+    [BluetoothSingleton sharedInstance].TPSstatus = true;
+    [BluetoothSingleton sharedInstance].CATTEMPstatus = true;
+    [BluetoothSingleton sharedInstance].TroubleSystem = true;
+    
+    
+    _savemoneyScrView.contentSize = CGSizeMake(0, 560);
+    [_savemoneyScrView setScrollEnabled:YES];
+    _savemoneyScrView.showsVerticalScrollIndicator = NO;
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSString *SaveMoney = [userDefaults stringForKey:@"SaveMoney"];
+    _saveMoneyLab.text =SaveMoney;
+    
+    
     
     [self getTodaysavemoney];//获取今日省钱
     
@@ -91,14 +111,16 @@
     iii = 0;
     ccc = 0;
     aaa = 0;
+    if (self.peripherals == nil) {
+        self.peripherals = [NSMutableArray array];
+    }
+    if (self.centralManager == nil) {
+        self.centralManager = [[CBCentralManager alloc] initWithDelegate:self
+                                                                   queue:nil
+                                                                 options:nil];
+    }
     
-    self.peripherals = [NSMutableArray array];
-    self.centralManager = [[CBCentralManager alloc] initWithDelegate:self
-                                                               queue:nil
-                                                             options:nil];
     a=0;
-
-   
 }
 
 -(void)drawline{
@@ -157,12 +179,12 @@
     UIImageView *imageView=[[UIImageView alloc] initWithFrame:self.view.frame];
     [_StatisticalGraphView addSubview:imageView];
     
-//    UIGraphicsBeginImageContext(imageView.frame.size);
+    //    UIGraphicsBeginImageContext(imageView.frame.size);
     UIGraphicsBeginImageContextWithOptions(imageView.frame.size,NO,0);
     
-//    UIGraphicsBeginImageContext(imageView.frame.size);
+    //    UIGraphicsBeginImageContext(imageView.frame.size);
     UIGraphicsBeginImageContextWithOptions(imageView.frame.size,NO,0);
-
+    
     [imageView.image drawInRect:CGRectMake(0, 0, imageView.frame.size.width, imageView.frame.size.height)];
     CGContextSetLineCap(UIGraphicsGetCurrentContext(), kCGLineCapSquare);
     CGContextSetLineWidth(UIGraphicsGetCurrentContext(), line);  //线宽
@@ -182,7 +204,7 @@
     [_StatisticalGraphView addSubview:imageView];
     
     UIGraphicsBeginImageContextWithOptions(imageView.frame.size,NO,0);
-
+    
     [imageView.image drawInRect:CGRectMake(0, 0, imageView.frame.size.width, imageView.frame.size.height)];
     CGContextSetLineCap(UIGraphicsGetCurrentContext(), kCGLineCapSquare);
     CGContextSetLineWidth(UIGraphicsGetCurrentContext(), 1);  //线宽
@@ -202,7 +224,7 @@
         bb = 40 + aa*35;
     }
     return bb;
-
+    
 }
 //钱对应坐标转换
 -(float)moneyToY:(int)aa{
@@ -211,7 +233,7 @@
         bb = 220 - aa*10;
     }
     return bb;
-
+    
 }
 - (IBAction)InsuranceClick:(id)sender {
     [self performSegueWithIdentifier:@"fristViewToSelectInsurancecompany" sender:nil];
@@ -237,7 +259,6 @@
                 if([_writeCharacteristic.UUID isEqual:[CBUUID UUIDWithString:@"FF01"]]) {
                     
                     [self StartCallBack];//init command
-                    [BluetoothSingleton sharedInstance].Car_data=true;
                 }
                 if([_writeCharacteristic.UUID isEqual:[CBUUID UUIDWithString:@"FF02"]]) {
                     
@@ -247,7 +268,6 @@
             ccc=0;
             a=0;
             NSLog(@"刷新了刷新了刷新了刷新了刷新了刷新了刷新了");
-            
             flag = 0;
         }else{
             iii =0;ccc=0;aaa=0;
@@ -336,7 +356,7 @@
     int f ;
     
     /**体检**/
-    if([BluetoothSingleton sharedInstance].status)
+    if([BluetoothSingleton sharedInstance].Car_Medical)
     {
         if ([[[NSString alloc]initWithData:characteristic.value encoding:NSUTF8StringEncoding]rangeOfString:
              @"\r\n"].location != NSNotFound) {
@@ -348,43 +368,119 @@
         }
         if(f==1){
             [_service.characteristics enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
-            {
-                _writeCharacteristic = obj;
-                if([_writeCharacteristic.UUID isEqual:[CBUUID UUIDWithString:@"FF01"]]){
-                    
-                    if([BluetoothSingleton sharedInstance].C3==1)/*第一次进来初始化为零*/
-                        [BluetoothSingleton sharedInstance].config_E2 = 100;
-                    //判断是不是以#结束
-                    if([[[NSString alloc]initWithData:characteristic.value encoding:NSUTF8StringEncoding]rangeOfString:@"RPDTC:"].location != NSNotFound)/**判断是否以#号结束，主要作用在启动代码**/
-                    {
-                        //返回数据格式：有故障码：RPDTC:000
-                        //无故障码：RPDTC:002,&P009&P1114
-                        //如果有故障码：
-                        [BluetoothSingleton sharedInstance].config_E2 = [BluetoothSingleton sharedInstance].config_E2 - 10;
-                    }
-                    else if([[[NSString alloc]initWithData:characteristic.value encoding:NSUTF8StringEncoding]rangeOfString:@"TPS:"].location != NSNotFound)/*如果返回的书数据有TPS：就表示有故障码就开始解析数据*/
-                    {
-                        //正常范围 15.9~21%，超出就异常
-                        [BluetoothSingleton sharedInstance].config_E2 = [BluetoothSingleton sharedInstance].config_E2 - 10;
-                    }
-                    else if([[[NSString alloc]initWithData:characteristic.value encoding:NSUTF8StringEncoding]rangeOfString:@"RPM:"].location != NSNotFound)/*如果返回的书数据有RPM：就表示有故障码就开始解析数据*/
-                    {
-                        //正常范围 632~811)，超出就异常
-                        [BluetoothSingleton sharedInstance].config_E2 = [BluetoothSingleton sharedInstance].config_E2 - 10;
-                    }
-                    else if([[[NSString alloc]initWithData:characteristic.value encoding:NSUTF8StringEncoding]rangeOfString:@"CATTEMP11:"].location != NSNotFound)/*如果返回的书数据有CATTEMP11：就表示有故障码就开始解析数据*/
-                    {
-                        //正常范围 300~800)，超出就异常
-                        [BluetoothSingleton sharedInstance].config_E2 = [BluetoothSingleton sharedInstance].config_E2 - 10;
-                    }
-                    [self sendBlueToothData:[BluetoothSingleton sharedInstance].Cmd3[[BluetoothSingleton sharedInstance].C3]];
-                    [BluetoothSingleton sharedInstance].C3++;
-                }
-            }];
+             {
+                 _writeCharacteristic = obj;
+                 if([_writeCharacteristic.UUID isEqual:[CBUUID UUIDWithString:@"FF01"]]){
+                     
+                     if([BluetoothSingleton sharedInstance].C3==1)/*第一次进来初始化为零*/{
+                         
+                         [BluetoothSingleton sharedInstance].config_E2 = 100;
+                         [BluetoothSingleton sharedInstance].TPSstatus = YES;
+                         [BluetoothSingleton sharedInstance].RPMstatus = YES;
+                         [BluetoothSingleton sharedInstance].CATTEMPstatus = YES;
+                         [BluetoothSingleton sharedInstance].TroubleSystem = YES;
+                     }
+                     
+                     //                    NSString *dasda= [[NSString alloc]initWithData:characteristic.value encoding:NSASCIIStringEncoding];
+                     //                      NSLog(@"data STR ======%@",dasda);
+                     //
+                     //判断是不是以#结束
+                     if([[[NSString alloc]initWithData:characteristic.value encoding:NSASCIIStringEncoding]rangeOfString:@"RPDTC:"].location != NSNotFound)/**判断是否以#号结束，主要作用在启动代码**/
+                     {
+                         //返回数据格式：有故障码：RPDTC:000
+                         //无故障码：RPDTC:002,&P009&P1114
+                         //如果有故障码：
+                         NSString *dataStr=[[NSString alloc]initWithData:characteristic.value encoding:NSASCIIStringEncoding];
+                         [[BluetoothSingleton sharedInstance].fullDataArrl addObject:dataStr];
+                         NSString *tempStr=[dataStr stringByReplacingOccurrencesOfString:@"\r\n" withString:@""];
+                         NSString *tempStr2 =[[tempStr stringByReplacingOccurrencesOfString:@"RPDTC:" withString:@""]
+                                              stringByReplacingOccurrencesOfString:@"&" withString:@""];
+                         
+                         NSArray *tempArr= [tempStr2 componentsSeparatedByString:@","];
+                         
+                         if (tempArr.count>1) {
+                             [BluetoothSingleton sharedInstance].config_E2 = [BluetoothSingleton sharedInstance].config_E2 - 10;
+                             NSLog(@"故障码个数==================%@ ,故障码============%@",tempArr[0],tempArr[1]);
+                             [BluetoothSingleton sharedInstance].TroubleSystem = NO;
+                             
+                             [BluetoothSingleton sharedInstance].Troublearr = tempArr;
+                         }
+                         
+                         
+                     }
+                     else if([[[NSString alloc]initWithData:characteristic.value encoding:NSASCIIStringEncoding]rangeOfString:@"TPS:"].location != NSNotFound)/*如果返回的书数据有TPS：就表示有故障码就开始解析数据*/
+                     {
+                         //正常范围 15.9~21%，超出就异常
+                         NSString *dataStr=[[NSString alloc]initWithData:characteristic.value encoding:NSASCIIStringEncoding];
+                         [[BluetoothSingleton sharedInstance].fullDataArrl addObject:dataStr];
+                         
+                         NSString *temStr= [dataStr stringByReplacingOccurrencesOfString:@"TPS:" withString:@""];
+                         NSString *temStr2 =[[[temStr stringByReplacingOccurrencesOfString:@"\r\n" withString:@""]
+                                              stringByReplacingOccurrencesOfString:@"%" withString:@""]
+                                             stringByReplacingOccurrencesOfString:@" " withString:@""];
+                         NSLog(@"进气温度=================%@",temStr2);
+                         if ([temStr2 floatValue]<15.9 || [temStr2 floatValue]>21) {
+                             [BluetoothSingleton sharedInstance].TPSstatus = NO;
+                             [BluetoothSingleton sharedInstance].config_E2 = [BluetoothSingleton sharedInstance].config_E2 - 10;
+                             [BluetoothSingleton sharedInstance].TPSarr = @[temStr2];
+                             //
+                         }
+                         
+                         
+                         
+                     }
+                     else if([[[NSString alloc]initWithData:characteristic.value encoding:NSASCIIStringEncoding]rangeOfString:@"RPM:"].location != NSNotFound)/*如果返回的书数据有RPM：就表示有故障码就开始解析数据*/
+                     {
+                         //正常范围 632~811)，超出就异常
+                         NSString *dataStr=[[NSString alloc]initWithData:characteristic.value encoding:NSASCIIStringEncoding];
+                         [[BluetoothSingleton sharedInstance].fullDataArrl addObject:dataStr];
+                         NSString *temStr= [dataStr stringByReplacingOccurrencesOfString:@"RPM:" withString:@""];
+                         NSString *temStr1 =[[temStr stringByReplacingOccurrencesOfString:@"\r\n" withString:@""]
+                                             stringByReplacingOccurrencesOfString:@" " withString:@""];
+                         //                        NSString *temStr2 =[temStr1 stringByReplacingOccurrencesOfString:@"%" withString:@""];
+                         NSLog(@"发动机系统=================%@",temStr1);
+                         if ([temStr1 floatValue]<632||[temStr1 floatValue]>811) {
+                             [BluetoothSingleton sharedInstance].RPMstatus = NO;
+                             [BluetoothSingleton sharedInstance].RPMarr = @[temStr1];
+                             [BluetoothSingleton sharedInstance].config_E2 = [BluetoothSingleton sharedInstance].config_E2 - 10;
+                         }
+                         
+                         
+                     }
+                     else if([[[NSString alloc]initWithData:characteristic.value encoding:NSASCIIStringEncoding]rangeOfString:@"CAT TEMP11:"].location != NSNotFound)/*如果返回的书数据有CATTEMP11：就表示有故障码就开始解析数据*/
+                     {
+                         //                        //正常范围 300~800)，超出就异常
+                         
+                         NSString *dataStr=[[NSString alloc]initWithData:characteristic.value encoding:NSASCIIStringEncoding];
+                         [[BluetoothSingleton sharedInstance].fullDataArrl addObject:dataStr];
+                         NSString *temStr= [dataStr stringByReplacingOccurrencesOfString:@"CAT TEMP11:" withString:@""];
+                         NSString *temStr1 =[[temStr stringByReplacingOccurrencesOfString:@"\r\n" withString:@""]
+                                             stringByReplacingOccurrencesOfString:@" " withString:@""];
+                         NSString *temStr2 =[temStr1 stringByReplacingOccurrencesOfString:@"¡æ" withString:@""];
+                         NSLog(@"CATTEMP11=================%@",temStr2);
+                         if ([temStr2  intValue]<300||[temStr2 intValue]>800) {
+                             [BluetoothSingleton sharedInstance].CATTEMPstatus = NO;
+                             [BluetoothSingleton sharedInstance].config_E2 = [BluetoothSingleton sharedInstance].config_E2 - 10;
+                             [ BluetoothSingleton sharedInstance].CATTEMParr = @[temStr2];
+                         }
+                         
+                     }
+                     if([BluetoothSingleton sharedInstance].C3==[BluetoothSingleton sharedInstance].Cmd3.count){
+                         [[NSNotificationCenter defaultCenter]postNotificationName:@"isFullData" object:[BluetoothSingleton sharedInstance].fullDataArrl];
+                         
+                         [[BluetoothSingleton sharedInstance].fullDataArrl removeAllObjects];
+                         
+                         [BluetoothSingleton sharedInstance].C3=0;
+                         
+                     }
+                     [self sendBlueToothData:[BluetoothSingleton sharedInstance].Cmd3[[BluetoothSingleton sharedInstance].C3]];
+                     [BluetoothSingleton sharedInstance].C3++;
+                 }
+             }];
         }
     }
     /**兼容监测*/
-    else if([BluetoothSingleton sharedInstance].Car_check)
+    else if([BluetoothSingleton sharedInstance].Car_Check)
     {
         if([BluetoothSingleton sharedInstance].C4==1)/*第一次进来初始化为true*/
             [BluetoothSingleton sharedInstance].config_E3 = true;
@@ -409,7 +505,7 @@
     {
         /**其他操作*/
     }
-    else
+    else if([BluetoothSingleton sharedInstance].Car_Data)
     {
         if ([[[NSString alloc]initWithData:characteristic.value encoding:NSUTF8StringEncoding]rangeOfString:@"\r\n"].location != NSNotFound) {
             f=1;
@@ -571,32 +667,30 @@
                                                     options:nil];
     } else if(self.centralManager.state == CBCentralManagerStatePoweredOff) {
         
-        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"蓝牙关闭状态", @"")
-                                    message:NSLocalizedString(@"请打开你的手机蓝牙", @"")
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Bluetooth Turned Off", @"")
+                                    message:NSLocalizedString(@"Turn on bluetooth and try again", @"")
                                    delegate:self
-                          cancelButtonTitle:NSLocalizedString(@"关闭", @"")
+                          cancelButtonTitle:NSLocalizedString(@"Dismiss", @"")
                           otherButtonTitles: nil] show];
     } else if(self.centralManager.state == CBCentralManagerStateUnsupported) {
         
-        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"你的手机不支持蓝牙4.0", @"")
-                                    message:NSLocalizedString(@"请更换IPHONE4S以上设备", @"")
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Bluetooth LE not available on this device", @"")
+                                    message:NSLocalizedString(@"This is not a iPhone 4S+ device", @"")
                                    delegate:self
-                          cancelButtonTitle:NSLocalizedString(@"关闭", @"")
+                          cancelButtonTitle:NSLocalizedString(@"Dismiss", @"")
                           otherButtonTitles: nil] show];
-        
     }
-
+    
 }
 //获取今日省钱数
 -(void)getTodaysavemoney{
     Alert *alv = [[Alert alloc]initWithFrame:CGRectMake(0, 0, SCREENWIDTH, SCREENHTIGHT)];
     
     if (![AppUtils nowstate]) {
-        alv.image = @"error";
         alv.message = @"暂无网络连接";
         [self.navigationController.view addSubview:alv];
     }else{
- 
+        
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
         NSString *UserPhoneNomber = [userDefaults stringForKey:@"UserPhoneNomber"];
         NSString *Cheqckedcarid = [userDefaults stringForKey:@"Cheqckedcarid"];
@@ -644,60 +738,95 @@
             
         }];
     }
-
+    
 }
 /**send the data to bluetooth*/
 - (void)sendBlueToothData:(NSString*)CmdData{
-
+    
     [_peripheral writeValue:[CmdData dataUsingEncoding:NSASCIIStringEncoding]
           forCharacteristic:_writeCharacteristic
                        type:CBCharacteristicWriteWithResponse];
 }
 - (void) StartCallBack{
+    
     if([BluetoothSingleton sharedInstance].Car_data)
     {
+        [self CarStatusSwitch:CarData];
         if([BluetoothSingleton sharedInstance].E1!=0)
         {
-            [self sendBlueToothData:[BluetoothSingleton sharedInstance].Cmd1[[BluetoothSingleton sharedInstance].C1]];
-            [BluetoothSingleton sharedInstance].C1++;
             if([BluetoothSingleton sharedInstance].C1==[BluetoothSingleton sharedInstance].Cmd1.count){
                 [BluetoothSingleton sharedInstance].C1 = 0;
             }
+            [self sendBlueToothData:[BluetoothSingleton sharedInstance].Cmd1[[BluetoothSingleton sharedInstance].C1]];
+            [BluetoothSingleton sharedInstance].C1++;
         }
         else
         {
-            [self sendBlueToothData:[BluetoothSingleton sharedInstance].Cmd2[[BluetoothSingleton sharedInstance].C2]];
-            [BluetoothSingleton sharedInstance].C2++;
             if([BluetoothSingleton sharedInstance].C2==[BluetoothSingleton sharedInstance].Cmd2.count){
                 [BluetoothSingleton sharedInstance].C2 = 0;
             }
+            [self sendBlueToothData:[BluetoothSingleton sharedInstance].Cmd2[[BluetoothSingleton sharedInstance].C2]];
+            [BluetoothSingleton sharedInstance].C2++;
         }
     }
     else if([BluetoothSingleton sharedInstance].Car_medical)
     {
-        [self sendBlueToothData:[BluetoothSingleton sharedInstance].Cmd3[[BluetoothSingleton sharedInstance].C3]];
-        [BluetoothSingleton sharedInstance].C3++;
+        [self CarStatusSwitch:CarMedical];//
         if([BluetoothSingleton sharedInstance].C3==[BluetoothSingleton sharedInstance].Cmd3.count){
             [BluetoothSingleton sharedInstance].C3 = 0;
         }
+        [self sendBlueToothData:[BluetoothSingleton sharedInstance].Cmd3[[BluetoothSingleton sharedInstance].C3]];
+        [BluetoothSingleton sharedInstance].C3++;
     }
     else if([BluetoothSingleton sharedInstance].Car_check)
     {
-        [self sendBlueToothData:[BluetoothSingleton sharedInstance].Cmd4[[BluetoothSingleton sharedInstance].C4]];
-        [BluetoothSingleton sharedInstance].C4++;
+        [self CarStatusSwitch:CarCheck];//
         if([BluetoothSingleton sharedInstance].C4==[BluetoothSingleton sharedInstance].Cmd4.count){
             [BluetoothSingleton sharedInstance].C4 = 0;
         }
+        [self sendBlueToothData:[BluetoothSingleton sharedInstance].Cmd4[[BluetoothSingleton sharedInstance].C4]];
+        [BluetoothSingleton sharedInstance].C4++;
+    }
+}
+- (void) CarStatusSwitch: (int)cmd
+{
+    switch (cmd) {
+        case CarData:
+            [BluetoothSingleton sharedInstance].Car_Medical = false;
+            [BluetoothSingleton sharedInstance].Car_Data = true;
+            [BluetoothSingleton sharedInstance].Car_Check = false;
+            [BluetoothSingleton sharedInstance].Car_Other = false;
+            break;
+        case CarCheck:
+            [BluetoothSingleton sharedInstance].Car_Medical = false;
+            [BluetoothSingleton sharedInstance].Car_Data = false;
+            [BluetoothSingleton sharedInstance].Car_Check = true;
+            [BluetoothSingleton sharedInstance].Car_Other = false;
+            break;
+        case CarMedical:
+            [BluetoothSingleton sharedInstance].Car_Medical = true;
+            [BluetoothSingleton sharedInstance].Car_Data = false;
+            [BluetoothSingleton sharedInstance].Car_Check = false;
+            [BluetoothSingleton sharedInstance].Car_Other = false;
+            break;
+        case CarOther:
+            [BluetoothSingleton sharedInstance].Car_Medical = false;
+            [BluetoothSingleton sharedInstance].Car_Data = false;
+            [BluetoothSingleton sharedInstance].Car_Check = false;
+            [BluetoothSingleton sharedInstance].Car_Other = true;
+            break;
+        default:
+            break;
     }
 }
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 @end

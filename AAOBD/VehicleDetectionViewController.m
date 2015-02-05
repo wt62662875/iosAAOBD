@@ -21,12 +21,20 @@
 @end
 
 @implementation VehicleDetectionViewController{
-
+    
     NSArray *dataArr;
     NSArray *imgArr;
 }
 - (IBAction)onclickNaviBtn:(UIButton *)sender {
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    [BluetoothSingleton sharedInstance].Car_medical = NO;
+    [BluetoothSingleton sharedInstance].Car_Medical = NO;
+    [BluetoothSingleton sharedInstance].Car_data = YES;
+    [BluetoothSingleton sharedInstance].Car_Data = NO;
+    [BluetoothSingleton sharedInstance].Car_check = NO;
+    [BluetoothSingleton sharedInstance].Car_Check = NO;
+    [BluetoothSingleton sharedInstance].Car_Other = NO;
+    
 }
 
 - (void)viewDidLoad {
@@ -38,38 +46,8 @@
     [_myTabView setUserInteractionEnabled:YES];
     _myTabView.allowsSelection = YES;
     [_naviBtn setImage:[UIImage imageNamed:@"return-clicked.png"] forState:UIControlStateHighlighted];
-
-
     
-
     
-    NSDictionary * param =[[NSDictionary alloc]initWithObjectsAndKeys:UserName,@"Loginname",@"P1117",@"HitchCode",@"沃尔沃",@"Brand",nil ];
-
-//    
-//    [ASIClient POST_Path:@"/API/Mobile/OBD.ashx?method=gethitch&LoginName&HitchCode&Brand" params:asd completed:^(id JSON, NSString *stringData) {
-//        
-//        NSLog(@"json------------%@",[JSON objectForKey:@"Hitchvalue"]);
-//        
-//        //拉取数据成功
-//        
-//    } failed:^(NSError *error) {
-//        //拉取失败,更多可能服务器关闭，手机无网络
-//        NSLog(@"当前无网络");
-//        ;
-//        
-//    }];
-    
-    [ASIClientPub getTroubleWithParam:param completed:^(id Json,NSString* strData){
-        NSLog(@"json------------%@",[Json objectForKey:@"Hitchvalue"]);
-    
-    }
-    failed:^(NSError *err){
-        NSLog(@"服务器");
-    }
-    andIsLogin:^(BOOL isBool){
-        NSLog(@"请登录");
-    
-    }];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -87,26 +65,64 @@
     _stateBtn.layer.borderWidth = BORDERWIGHT;
     _stateBtn.layer.cornerRadius = 75.0f;
     _stateBtn.enabled = NO;
+    [_stateBtn setTitle:[NSString stringWithFormat:@"%D", [BluetoothSingleton sharedInstance].config_E2] forState:UIControlStateNormal];
     
 }
+-(void)getTroubleStatus:(NSInteger)row Cell:(CustomTableViewCell*)cell{
+    switch (row) {
+        case 0:
+            if ([BluetoothSingleton sharedInstance].RPMstatus == NO) {
+                cell.imageView_state.image = [UIImage imageNamed:@"warning"];
+            }
+            
+            break;
+            
+        case 1:
+            if ([BluetoothSingleton sharedInstance].TPSstatus == NO) {
+                cell.imageView_state.image = [UIImage imageNamed:@"warning"];
+            }
+            
+            break;
+            
+        case 2:
+            if ([BluetoothSingleton sharedInstance].CATTEMPstatus == NO) {
+                cell.imageView_state.image = [UIImage imageNamed:@"warning"];
+            }
+            
+            break;
+            
+        case 3:
+            if ([BluetoothSingleton sharedInstance].TPSstatus == NO) {
+                cell.imageView_state.image = [UIImage imageNamed:@"warning"];
+            }
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+    
+}
+
 #pragma mark -UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return dataArr.count;
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-
+    
     static NSString *tableCellIdentifier = @"CustomCell";
     CustomTableViewCell *cell = (CustomTableViewCell *)[tableView dequeueReusableCellWithIdentifier:tableCellIdentifier];
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.lab_name.text = [dataArr objectAtIndex:indexPath.row];
     cell.imageView_Name.image = [UIImage imageNamed:[imgArr objectAtIndex:indexPath.row]];
-    
+    [self getTroubleStatus:indexPath.row Cell:cell];
     return cell;
-
+    
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-
+    
     return tableView.frame.size.height/dataArr.count;
 }
 
@@ -136,7 +152,7 @@
         case 3:
             abnVC.VCtype = Thefault;
             [self.navigationController pushViewController:abnVC animated:YES];
-           
+            
             break;
             
         default:
@@ -144,13 +160,13 @@
     }
 }
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 @end
